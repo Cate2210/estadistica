@@ -47,6 +47,8 @@ app.layout = html.Div([
         #se llama los outputs creados en el layout
           Output("histograma", "figure"),
           Output("dispersion", "figure"),
+          Output("pie", "figure"),
+          Output("barras", "figure"),
           Input("filtro_materia", 'value')
 
 )
@@ -61,8 +63,17 @@ def actualizar(filtro_materia):
     #grafico de dispersion
     disper = px.scatter(filtro,x="Edad",y="Promedio",color="Desempeño",title=f"Edad vs Promedio - {filtro_materia}",
                         color_discrete_sequence=px.colors.qualitative.Set2).update_layout(template="plotly_white")  
+    #grafico de pie
+    pi = px.pie(filtro,names="Desempeño",values="Promedio",
+                title=f"Desempeño - {filtro_materia}",
+                color_discrete_sequence=px.colors.qualitative.Pastel).update_layout(template="plotly_dark")
+    
+    #grafico de barras
+    promedios = filtro.groupby("Carrera")["Promedio"].mean().reset_index()
+    barr = px.bar(promedios,x="Carrera",y="Promedio",title="Promedio de notas por carrera",
+                   color="Carrera",color_discrete_sequence=px.colors.qualitative.Prism).update_layout(template="ggplot2")
 
-    return histo,disper
+    return histo,disper,pi,barr
 
 #Ejecutar la aplicacion
 if __name__ == '__main__':
